@@ -3,7 +3,10 @@
 //  Created by lukasz karluk on 15/06/12.
 //  http://www.julapy.com
 //
+//  Updated by Chris Mullany (http://chrismullany.com) to work with latest iOS/oF
 
+#import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
 #import <AVFoundation/AVFoundation.h>
 
 @protocol VideoWriterDelegate <NSObject>

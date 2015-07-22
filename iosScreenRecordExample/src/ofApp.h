@@ -4,7 +4,6 @@
 #include "ofxiOS.h"
 #include "ofxiOSExtras.h"
 #include "ofxiOSVideoWriter.h"
-
 #include "ofxGui.h"
 
 class ofApp : public ofxiOSApp{
@@ -55,6 +54,8 @@ public:
     vector<ofVec2f> pointsNew;
     
     ofxToggle recordToggle;
+    
+    ofFile file;
 };
 
 

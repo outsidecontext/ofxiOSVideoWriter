@@ -1,6 +1,6 @@
 #include "ofApp.h"
 #include "AVFoundationVideoPlayer.h"
-#import "DelegateForOF.h"
+#import "DelegateForOF.h" 
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -8,7 +8,7 @@ void ofApp::setup(){
     float fps = 30;
     ofSetFrameRate(fps);
     
-    ofSetOrientation(OF_ORIENTATION_90_RIGHT);
+    ofSetOrientation(OF_ORIENTATION_90_LEFT);
     
     //----------------------------------------------------------
     c1 = ofColor::magenta;
@@ -63,7 +63,7 @@ void ofApp::setup(){
 	ofxGuiSetDefaultHeight(80);
     
     recordToggle.setup("record", bRecord);
-    recordToggle.setPosition(20, ofGetHeight() - 100);
+    recordToggle.setPosition(20, 20);
     recordToggle.addListener(this, &ofApp::recordToggleChanged);
 }
 
@@ -187,7 +187,10 @@ void ofApp::draw(){
     
     //------------------------------------
     if(bRecord) {
-        ofDrawBitmapString("RECORDING", 20, 20);
+        string c = " not cache";
+        if (videoWriter.bUseTextureCache) c = " CACHE";
+        ofSetColor(255, 0, 0);
+        ofDrawBitmapString("RECORDING " + c, 20, 20);
     }
     
     ofDrawBitmapString("fps = " + ofToString((int)ofGetFrameRate()), ofGetWidth() - 80, 20);
@@ -208,12 +211,12 @@ void ofApp::drawStuff() {
     
     ofSetColor(255, 220);
     
-    int x, y, w, h;
-    x = 0;
-    y = 0;
-    w = videoPlayer0.getWidth();
-    h = videoPlayer0.getHeight();
-    videoPlayer0.getTexture()->draw(x, y, w, h);
+//    int x, y, w, h;
+//    x = 0;
+//    y = 0;
+//    w = videoPlayer0.getWidth();
+//    h = videoPlayer0.getHeight();
+//    videoPlayer0.getTexture()->draw(x, y, w, h);
     
     ofSetColor(255);
 }

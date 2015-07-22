@@ -212,6 +212,9 @@
                 [self.delegate videoWriterComplete:self.outputURL];
             }
             NSLog(@"video saved! - %@", self.outputURL.description);
+            // Save the video to the photos album
+            // TODO: make this optional? Or listen for the event and save to photos outside of this library?
+            UISaveVideoAtPathToSavedPhotosAlbum(self.outputURL.path, nil, NULL, NULL);
         });
     });
 }
