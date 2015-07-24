@@ -8,6 +8,7 @@
 #import <OpenGLES/ES1/gl.h>
 #import <OpenGLES/ES1/glext.h>
 #import <AVFoundation/AVFoundation.h>
+#import <Photos/Photos.h>
 
 @protocol VideoWriterDelegate <NSObject>
 @optional
@@ -36,6 +37,7 @@
 - (id)initWithFile:(NSString *)file andVideoSize:(CGSize)size;
 - (id)initWithPath:(NSString *)path andVideoSize:(CGSize)size;
 - (id)initWithURL:(NSURL *)fileURL andVideoSize:(CGSize)size;
+- (id)setPath:(NSString *)path;
 
 - (void)startRecording;
 - (void)cancelRecording;

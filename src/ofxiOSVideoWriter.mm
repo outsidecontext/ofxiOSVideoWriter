@@ -62,8 +62,10 @@ ofxiOSVideoWriter::~ofxiOSVideoWriter() {
 //------------------------------------------------------------------------- setup.
 void ofxiOSVideoWriter::setup(int videoWidth, int videoHeight) {
     NSString * docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString * docVideoPath = [docPath stringByAppendingPathComponent:@"/video.mov"];
-
+    NSString *uuid = [[NSUUID UUID] UUIDString];
+    NSString *filename = [uuid stringByAppendingString:@".mov"];
+    NSString * docVideoPath = [docPath stringByAppendingPathComponent:filename];
+    
     setup(videoWidth, videoHeight, [docVideoPath UTF8String]);
 }
 
@@ -76,6 +78,8 @@ void ofxiOSVideoWriter::setup(int videoWidth, int videoHeight, string filePath) 
     videoWriter = [[VideoWriter alloc] initWithPath:[NSString stringWithUTF8String:filePath.c_str()] andVideoSize:videoSize];
     videoWriter.context = [ofxiOSEAGLView getInstance].context; // TODO - this should probably be passed in with init.
     videoWriter.enableTextureCache = YES; // TODO - this should be turned on by default when it is working.
+    
+    ofLogNotice() << "video path: " << filePath.c_str();
     
     shaderBGRA.setupShaderFromSource(GL_VERTEX_SHADER, swizzleVertexShader);
     shaderBGRA.setupShaderFromSource(GL_FRAGMENT_SHADER, swizzleFragmentShader);
@@ -128,6 +132,15 @@ void ofxiOSVideoWriter::draw(float x, float y, float width, float height) {
 
 //------------------------------------------------------------------------- record api.
 void ofxiOSVideoWriter::startRecording() {
+    
+    // give the video a new unique name, we want to keep each one
+    NSString * docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *uuid = [[NSUUID UUID] UUIDString];
+    NSString *filename = [uuid stringByAppendingString:@".mov"];
+    NSString * docVideoPath = [docPath stringByAppendingPathComponent:filename];
+    string filepath = [docVideoPath UTF8String];
+    [videoWriter setPath:[NSString stringWithUTF8String:filepath.c_str()]];
+    
     if((videoWriter == nil) ||
        [videoWriter isWriting] == YES) {
         return;

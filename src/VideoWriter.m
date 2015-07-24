@@ -61,6 +61,14 @@
     return self;
 }
 
+- (id)setPath:(NSString *)path {
+    if(self) {
+        NSURL * fileURL = [NSURL fileURLWithPath:path];
+        self.outputURL = fileURL;
+    }
+    return self;
+}
+
 - (id)init {
     self = [super init];
     if(self) {
@@ -110,9 +118,11 @@
 		CFRelease(_firstAudioBuffer);
 	}
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:self.outputURL.path]) { // remove old file.
-        [[NSFileManager defaultManager] removeItemAtPath:self.outputURL.path error:nil];
-    }
+//    if ([[NSFileManager defaultManager] fileExistsAtPath:self.outputURL.path]) { // remove old file.
+//        [[NSFileManager defaultManager] removeItemAtPath:self.outputURL.path error:nil];
+//    }
+    
+    NSLog(@"  startRecording - %@", self.outputURL);
     
     // allocate the writer object with our output file URL
     NSError *error = nil;
@@ -120,6 +130,7 @@
                                                 fileType:AVFileTypeQuickTimeMovie
                                                    error:&error];
     if(error) {
+        NSLog(@"  error - %@", error);
         if([self.delegate respondsToSelector:@selector(videoWriterError:)]) {
             [self.delegate videoWriterError:error];
         }
@@ -213,8 +224,31 @@
             }
             NSLog(@"video saved! - %@", self.outputURL.description);
             // Save the video to the photos album
-            // TODO: make this optional? Or listen for the event and save to photos outside of this library?
-            UISaveVideoAtPathToSavedPhotosAlbum(self.outputURL.path, nil, NULL, NULL);
+            
+            // Check compatability? Sometimes this fails but the vide still copies!?
+            //BOOL isVideoGood = UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.outputURL.path);
+            //if (isVideoGood)  NSLog(@"Video CAN be saved to iOS camera roll");
+            //else  NSLog(@"Video CANNOT be saved to iOS camera roll");
+            
+            // This doesn't work anymore in iOS 8.0+
+            //[self saveMovieToCameraRoll];
+            
+            // This works sometimes!?
+            // UISaveVideoAtPathToSavedPhotosAlbum(self.outputURL.path, nil, NULL, NULL);
+            
+            // This works on first time only, after that it fails until the app is restarted
+            // This will only work for iOS 8.0 +
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                // Create a change request from the asset to be modified.
+                PHAssetChangeRequest *request = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:self.outputURL];
+            } completionHandler:^(BOOL success, NSError *error) {
+                NSLog(@"Finished updating asset. %@", (success ? @"Success." : error));
+                // Remove the file from the sandbox?
+                //if ([[NSFileManager defaultManager] fileExistsAtPath:self.outputURL.path]) { // remove old file.
+                //    NSLog(@" remove old video at - %@", self.outputURL);
+                //    [[NSFileManager defaultManager] removeItemAtPath:self.outputURL.path error:nil];
+                //}
+            }];
         });
     });
 }
@@ -525,7 +559,7 @@
     
     // save the movie to the camera roll
 	ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-	//NSLog(@"writing \"%@\" to photos album", outputURL);
+	NSLog(@"writing \"%@\" to photos album", self.outputURL);
 	[library writeVideoAtPathToSavedPhotosAlbum:self.outputURL
 								completionBlock:^(NSURL *assetURL, NSError *error) {
 									if (error) {
@@ -537,7 +571,7 @@
 											NSLog(@"Couldn't remove temporary movie file \"%@\"", self.outputURL);
 									}
                                     
-									self.outputURL = nil;
+									//self.outputURL = nil;
                                     [library release];
                                     
                                     if([self.delegate respondsToSelector:@selector(videoWriterSavedToCameraRoll)]) {
