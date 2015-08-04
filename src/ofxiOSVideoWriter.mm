@@ -62,9 +62,10 @@ ofxiOSVideoWriter::~ofxiOSVideoWriter() {
 //------------------------------------------------------------------------- setup.
 void ofxiOSVideoWriter::setup(int videoWidth, int videoHeight) {
     NSString * docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *uuid = [[NSUUID UUID] UUIDString];
-    NSString *filename = [uuid stringByAppendingString:@".mov"];
-    NSString * docVideoPath = [docPath stringByAppendingPathComponent:filename];
+    //NSString *uuid = [[NSUUID UUID] UUIDString];
+    //NSString *filename = [uuid stringByAppendingString:@".mov"];
+    //NSString * docVideoPath = [docPath stringByAppendingPathComponent:filename];
+    NSString * docVideoPath = [docPath stringByAppendingPathComponent:@"/video.mov"];
     
     setup(videoWidth, videoHeight, [docVideoPath UTF8String]);
 }
@@ -133,13 +134,13 @@ void ofxiOSVideoWriter::draw(float x, float y, float width, float height) {
 //------------------------------------------------------------------------- record api.
 void ofxiOSVideoWriter::startRecording() {
     
-    // give the video a new unique name, we want to keep each one
-    NSString * docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *uuid = [[NSUUID UUID] UUIDString];
-    NSString *filename = [uuid stringByAppendingString:@".mov"];
-    NSString * docVideoPath = [docPath stringByAppendingPathComponent:filename];
-    string filepath = [docVideoPath UTF8String];
-    [videoWriter setPath:[NSString stringWithUTF8String:filepath.c_str()]];
+    // give the video a new unique name if we want to keep each one
+    //    NSString * docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    //    NSString *uuid = [[NSUUID UUID] UUIDString];
+    //    NSString *filename = [uuid stringByAppendingString:@".mov"];
+    //    NSString * docVideoPath = [docPath stringByAppendingPathComponent:filename];
+    //    string filepath = [docVideoPath UTF8String];
+    //    [videoWriter setPath:[NSString stringWithUTF8String:filepath.c_str()]];
     
     if((videoWriter == nil) ||
        [videoWriter isWriting] == YES) {
@@ -317,4 +318,8 @@ void ofxiOSVideoWriter::end() {
             //
         }
     }
+}
+
+void ofxiOSVideoWriter::saveToCameraRoll() {
+    [videoWriter saveMovieToCameraRoll];
 }

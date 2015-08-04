@@ -39,6 +39,8 @@ public:
     void initTextureCache();
     void killTextureCache();
     
+    void saveToCameraRoll();
+    
     void begin();
     void end();
     
